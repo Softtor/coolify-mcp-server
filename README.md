@@ -61,7 +61,7 @@ Then configure in your MCP settings:
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `COOLIFY_BASE_URL` | No | Coolify instance URL (default: `https://cloud.softtor.com.br`) |
+| `COOLIFY_BASE_URL` | **Yes** | Your Coolify instance URL (e.g., `https://coolify.example.com`) |
 | `COOLIFY_API_KEY` | No* | Default API key |
 | `COOLIFY_DEFAULT_TEAM` | No | Default team name (default: `default`) |
 | `COOLIFY_TEAM_<NAME>_API_KEY` | No* | Team-specific API key |

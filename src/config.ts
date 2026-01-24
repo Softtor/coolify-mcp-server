@@ -12,7 +12,7 @@ export interface Config {
 }
 
 const ConfigSchema = z.object({
-  baseUrl: z.string().url(),
+  baseUrl: z.string().url("COOLIFY_BASE_URL must be a valid URL"),
   defaultTeam: z.string().min(1),
 });
 
@@ -49,7 +49,12 @@ export function getConfig(): Config {
     );
   }
 
-  const baseUrl = process.env.COOLIFY_BASE_URL || "https://cloud.softtor.com.br";
+  const baseUrl = process.env.COOLIFY_BASE_URL;
+  if (!baseUrl) {
+    throw new Error(
+      "COOLIFY_BASE_URL is required. Set it to your Coolify instance URL (e.g., https://coolify.example.com)."
+    );
+  }
   const envDefaultTeam = process.env.COOLIFY_DEFAULT_TEAM || "default";
   const defaultTeam = teams.has(envDefaultTeam) ? envDefaultTeam : teams.keys().next().value!;
 
