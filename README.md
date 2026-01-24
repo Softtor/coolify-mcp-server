@@ -103,6 +103,16 @@ coolify_list_applications { team: "staging" }
 3. Create a new token with appropriate permissions
 4. Copy the token and use it as your API key
 
+### Important: Tokens Are Team-Scoped
+
+**Coolify API tokens are scoped by team.** Each token only provides access to resources within the team where it was created. This means:
+
+- A token created in the "Infocell" team can only access Infocell's applications, databases, and servers
+- To manage resources across multiple teams, you need a separate token for each team
+- When using multi-team configuration, make sure each `COOLIFY_TEAM_<NAME>_API_KEY` corresponds to a token created in that specific team
+
+See the [Coolify API documentation](https://coolify.io/docs/api-reference/authorization) for more details on token scopes and permissions.
+
 ## Available Tools
 
 ### Applications (6 tools)
