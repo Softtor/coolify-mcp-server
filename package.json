@@ -1,0 +1,51 @@
+{
+  "name": "@softtor/coolify-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Coolify API integration with multi-team support",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "coolify-mcp-server": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "coolify",
+    "claude",
+    "ai",
+    "devops",
+    "deployment"
+  ],
+  "author": "Softtor",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Softtor/coolify-mcp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Softtor/coolify-mcp-server/issues"
+  },
+  "homepage": "https://github.com/Softtor/coolify-mcp-server#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "axios": "^1.7.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.7.0"
+  }
+}
