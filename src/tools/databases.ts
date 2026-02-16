@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { coolifyGet, coolifyPost } from "../services/coolify-client.js";
 import { TeamParamSchema, UuidParamSchema } from "../schemas/common.js";
+import { summarizeDatabase, summarizeDatabaseDetail } from "../services/summarizer.js";
 
 export const ListDatabasesSchema = TeamParamSchema;
 export const GetDatabaseSchema = UuidParamSchema;
@@ -11,12 +12,15 @@ export const ListDatabaseBackupsSchema = UuidParamSchema;
 
 export async function listDatabases(params: z.infer<typeof ListDatabasesSchema>) {
   const data = await coolifyGet<unknown[]>("/databases", { team: params.team });
-  return JSON.stringify(data, null, 2);
+  if (params.verbose) return JSON.stringify(data, null, 2);
+  const summarized = (data as Record<string, unknown>[]).map(summarizeDatabase);
+  return JSON.stringify(summarized, null, 2);
 }
 
 export async function getDatabase(params: z.infer<typeof GetDatabaseSchema>) {
   const data = await coolifyGet<unknown>(`/databases/${params.uuid}`, { team: params.team });
-  return JSON.stringify(data, null, 2);
+  if (params.verbose) return JSON.stringify(data, null, 2);
+  return JSON.stringify(summarizeDatabaseDetail(data), null, 2);
 }
 
 export async function startDatabase(params: z.infer<typeof StartDatabaseSchema>) {
@@ -50,13 +54,13 @@ export async function listDatabaseBackups(params: z.infer<typeof ListDatabaseBac
 export const databaseTools = [
   {
     name: "coolify_list_databases",
-    description: "List all databases in Coolify",
+    description: "List all databases in Coolify (summarized by default)",
     inputSchema: ListDatabasesSchema,
     handler: listDatabases,
   },
   {
     name: "coolify_get_database",
-    description: "Get details of a specific database by UUID",
+    description: "Get details of a specific database by UUID (summarized by default)",
     inputSchema: GetDatabaseSchema,
     handler: getDatabase,
   },

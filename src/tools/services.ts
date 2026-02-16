@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { coolifyGet, coolifyPost } from "../services/coolify-client.js";
 import { TeamParamSchema, UuidParamSchema } from "../schemas/common.js";
+import { summarizeService, summarizeServiceDetail } from "../services/summarizer.js";
 
 export const ListServicesSchema = TeamParamSchema;
 export const GetServiceSchema = UuidParamSchema;
@@ -10,12 +11,15 @@ export const RestartServiceSchema = UuidParamSchema;
 
 export async function listServices(params: z.infer<typeof ListServicesSchema>) {
   const data = await coolifyGet<unknown[]>("/services", { team: params.team });
-  return JSON.stringify(data, null, 2);
+  if (params.verbose) return JSON.stringify(data, null, 2);
+  const summarized = (data as Record<string, unknown>[]).map(summarizeService);
+  return JSON.stringify(summarized, null, 2);
 }
 
 export async function getService(params: z.infer<typeof GetServiceSchema>) {
   const data = await coolifyGet<unknown>(`/services/${params.uuid}`, { team: params.team });
-  return JSON.stringify(data, null, 2);
+  if (params.verbose) return JSON.stringify(data, null, 2);
+  return JSON.stringify(summarizeServiceDetail(data), null, 2);
 }
 
 export async function startService(params: z.infer<typeof StartServiceSchema>) {
@@ -42,13 +46,13 @@ export async function restartService(params: z.infer<typeof RestartServiceSchema
 export const serviceTools = [
   {
     name: "coolify_list_services",
-    description: "List all services in Coolify",
+    description: "List all services in Coolify (summarized by default, docker_compose stripped)",
     inputSchema: ListServicesSchema,
     handler: listServices,
   },
   {
     name: "coolify_get_service",
-    description: "Get details of a specific service by UUID",
+    description: "Get details of a specific service by UUID (summarized by default)",
     inputSchema: GetServiceSchema,
     handler: getService,
   },

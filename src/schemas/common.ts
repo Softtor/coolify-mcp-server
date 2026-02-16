@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const TeamParamSchema = z.object({
   team: z.string().optional().describe("Team name to use (default: configured default team)"),
+  verbose: z.boolean().optional().describe("Return full API response without summarization. Warning: may use significant context window."),
 });
 
 export const UuidParamSchema = TeamParamSchema.extend({
