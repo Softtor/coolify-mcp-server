@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { loadStoredKeys } from "./services/key-manager.js";
 
 export interface TeamConfig {
   name: string;
@@ -19,6 +20,17 @@ const ConfigSchema = z.object({
 function loadTeams(): Map<string, TeamConfig> {
   const teams = new Map<string, TeamConfig>();
 
+  // Load stored keys first (lower priority)
+  try {
+    const storedKeys = loadStoredKeys();
+    for (const [name, config] of storedKeys) {
+      teams.set(name, config);
+    }
+  } catch {
+    // Ignore errors loading stored keys
+  }
+
+  // Env vars override stored keys
   for (const [key, value] of Object.entries(process.env)) {
     const match = key.match(/^COOLIFY_TEAM_(.+)_API_KEY$/);
     if (match && value) {
@@ -36,6 +48,10 @@ function loadTeams(): Map<string, TeamConfig> {
 
 let configInstance: Config | null = null;
 
+export function resetConfig(): void {
+  configInstance = null;
+}
+
 export function getConfig(): Config {
   if (configInstance) {
     return configInstance;
@@ -45,7 +61,7 @@ export function getConfig(): Config {
 
   if (teams.size === 0) {
     throw new Error(
-      "No API keys configured. Set COOLIFY_API_KEY or COOLIFY_TEAM_<NAME>_API_KEY environment variables."
+      "No API keys configured. Set COOLIFY_API_KEY or COOLIFY_TEAM_<NAME>_API_KEY environment variables, or use coolify_add_team_key."
     );
   }
 

@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestConfig } from "axios";
 import { getConfig, getTeamApiKey } from "../config.js";
 import { handleApiError, formatErrorResponse } from "./error-handler.js";
+import { appendLog, type LogEntry } from "./rag-store.js";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE";
 
@@ -43,12 +44,36 @@ export async function coolifyRequest<T>(
     axiosConfig.params = filteredParams;
   }
 
+  const startTime = Date.now();
+  let logStatus: LogEntry["status"] = "success";
+  let responseSummary = "";
+
   try {
     const response = await axios(axiosConfig);
-    return response.data;
+    const data = response.data;
+    responseSummary = typeof data === "object"
+      ? JSON.stringify(data).slice(0, 200)
+      : String(data).slice(0, 200);
+    return data;
   } catch (error) {
+    logStatus = "error";
     const apiError = handleApiError(error);
+    responseSummary = apiError.message;
     throw new Error(formatErrorResponse(apiError));
+  } finally {
+    try {
+      appendLog({
+        timestamp: new Date().toISOString(),
+        tool: `${method} ${endpoint}`,
+        team: options.team || config.defaultTeam,
+        params: (data as Record<string, unknown>) ?? options.params ?? {},
+        status: logStatus,
+        responseSummary,
+        durationMs: Date.now() - startTime,
+      });
+    } catch {
+      // Never let logging break API calls
+    }
   }
 }
 

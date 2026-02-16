@@ -14,6 +14,8 @@ import { serviceTools } from "./tools/services.js";
 import { serverTools } from "./tools/servers.js";
 import { deploymentTools } from "./tools/deployments.js";
 import { projectTools } from "./tools/projects.js";
+import { logsRagTools } from "./tools/logs-rag.js";
+import { keysTools } from "./tools/keys.js";
 
 interface ToolDefinition<T = unknown> {
   name: string;
@@ -30,6 +32,8 @@ const allTools: ToolDefinition<any>[] = [
   ...serverTools,
   ...deploymentTools,
   ...projectTools,
+  ...logsRagTools,
+  ...keysTools,
 ];
 
 function zodToJsonSchema(schema: z.ZodType): Record<string, unknown> {
